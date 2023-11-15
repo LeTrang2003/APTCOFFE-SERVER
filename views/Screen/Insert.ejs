@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Insert</title>
+    <!-- Latest compiled and minified CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      body {
+        background-image: url("https://mdbootstrap.com/img/Photos/Others/images/79.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .container {
+        background-color: rgba(
+          255,
+          255,
+          255,
+          0.8
+        ); /* Màu nền với độ trong suốt */
+        padding: 20px;
+        border-radius: 10px; /* Bo viền */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Đổ mờ */
+        width: 80%; /* Độ rộng của khung chứa form */
+      }
+
+      .container h1 {
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <%- include('../Screen/Navbar.ejs') -%>
+    <div class="container">
+      <h1 class="pagination justify-content-center">INSERT PRODUCT</h1>
+      <form
+        id="insertProduct"
+        class="was-validated"
+        enctype="multipart/form-data"
+      >
+        <div class="form-group">
+          <label for="name" class="form-label">Name:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            placeholder="Enter your name ..."
+            name="name"
+            required
+          />
+          <div class="valid-feedback">Valid.</div>
+          <div class="invalid-feedback">Please fill out this field.</div>
+        </div>
+        <div class="form-group">
+          <label for="price" class="form-label">Price:</label>
+          <input
+            type="number"
+            class="form-control"
+            id="price"
+            placeholder="Enter your price..."
+            name="price"
+            required
+          />
+          <div class="valid-feedback">Valid.</div>
+          <div class="invalid-feedback">Please fill out this field.</div>
+        </div>
+        <div class="form-group">
+          <label for="company" class="form-label">Company:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="company"
+            placeholder="Enter your Company..."
+            name="company"
+            required
+          />
+          <div class="valid-feedback">Valid.</div>
+          <div class="invalid-feedback">Please fill out this field.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="avatar" class="form-label">Image Product:</label>
+          <input
+            type="file"
+            class="form-control"
+            id="avatar"
+            placeholder=".Avatar..."
+            name="avatar"
+            required
+            multiple
+          />
+          <div class="valid-feedback">Valid.</div>
+          <div class="invalid-feedback">Please fill out this field.</div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary d-block mx-auto"
+          style="width: 200px"
+        >
+          INSERT
+        </button>
+      </form>
+    </div>
+    <script>
+      try {
+        const SubmitSignUp = document.getElementById("insertProduct");
+
+        SubmitSignUp.addEventListener("submit", (event) => {
+          event.preventDefault();
+          var form = document.getElementById("insertProduct");
+          var formData = new FormData(form);
+
+          fetch("/insert/product", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => {
+              console.log(response);
+              if (response.status == 200) {
+                alert("Insert successfully !!!");
+                window.location.href = "/list";
+              } else {
+                alert("Insert failed already exists");
+              }
+            })
+            .then((data) => {
+              console.log(data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    </script>
+  </body>
+</html>
