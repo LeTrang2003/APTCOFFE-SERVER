@@ -1,0 +1,262 @@
+<!-- ListTable.ejs -->
+
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>List Tables</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      body {
+        background-image: url("https://mdbootstrap.com/img/Photos/Others/images/79.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        display: flex;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .search-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-bottom: 40px;
+      }
+
+      .search-box {
+        border-radius: 5px;
+        width: 200px;
+        height: 30px;
+        padding-left: 10px;
+        margin-right: 10px;
+      }
+
+      .search-button {
+        background-color: white;
+        font-weight: bold;
+        color: black;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+
+      .table-container {
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        height: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <%- include('../Screen/Navbar.ejs') -%>
+    <div class="container mt-5 pt-5 table-container">
+      <h2 class="pagination justify-content-center mb-5">Danh sách bàn</h2>
+
+      <table class="table table-hover" style="text-align: center">
+        <thead class="table-success">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Product ID</th>
+            <th>Status</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody id="tableTableBody"></tbody>
+      </table>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          const response = await fetch("/api/tables", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          populateTable(data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+
+        function populateTable(data) {
+          const tableBody = document.getElementById("tableTableBody");
+
+          data.forEach((table) => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+      <td>${table._id}</td>  
+      <td>${table.name}</td>
+      <td>${table.idProduct}</td>
+      <td>${table.status}</td>
+      <td><i class="fas fa-edit" data-bs-toggle="modal" data-bs-target="#editModal" onclick="editTable('${table._id}', '${table.name}', '${table.idProduct}', '${table.status}')"></i></td>
+      <td onclick="deleteTable('${table._id}')"><i class="fas fa-trash-alt"></i></td>
+    `;
+
+            tableBody.appendChild(row);
+          });
+        }
+      });
+
+      function editTable(tableId, tableName, tableIdProduct, tableStatus) {
+        const editModal = document.getElementById("editModal");
+
+        const editIdInput = document.getElementById("editId");
+        const editNameInput = document.getElementById("editName");
+        const editIdProductInput = document.getElementById("editIdProduct");
+        const editStatusInput = document.getElementById("editStatus");
+
+        editIdInput.value = tableId;
+        editNameInput.value = tableName;
+        editIdProductInput.value = tableIdProduct;
+        editStatusInput.value = tableStatus;
+
+        const modalInstance = new bootstrap.Modal(editModal);
+        modalInstance.show();
+      }
+
+      function saveChanges() {
+        const editIdInput = document.getElementById("editId").value;
+        const editNameInput = document.getElementById("editName").value;
+        const editIdProductInput =
+          document.getElementById("editIdProduct").value;
+        const editStatusInput = document.getElementById("editStatus").value;
+
+        var form = document.getElementById("editTableForm");
+        var formData = new FormData(form);
+
+        formData.append("id", editIdInput);
+        formData.append("name", editNameInput);
+        formData.append("idProduct", editIdProductInput);
+        formData.append("status", editStatusInput);
+
+        fetch(`/update/table/${editIdInput}`, {
+          method: "PUT",
+          body: formData,
+        })
+          .then((response) => {
+            console.log(response);
+            if (response.status === 200) {
+              alert("Update successfully!");
+              const modalInstance = bootstrap.Modal.getInstance(
+                document.getElementById("editModal")
+              );
+              window.location.href = "/web/list-table";
+            } else {
+              alert("Update failed!");
+            }
+          })
+          .catch((err) => {
+            console.error("Error updating table:", err);
+          });
+      }
+
+      function deleteTable(tableId) {
+        if (confirm("Are you sure you want to delete this table?")) {
+          fetch(`/delete/table/${tableId}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => {
+              alert("Table deleted successfully!");
+              window.location.reload();
+            })
+            .catch((error) => {
+              console.error("Error deleting table:", error);
+            });
+        }
+      }
+    </script>
+
+    <!-- Edit Modal -->
+    <form id="editTableForm">
+      <div
+        class="modal fade"
+        id="editModal"
+        tabindex="-1"
+        aria-labelledby="editModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editModalLabel">Edit Table</h5>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="editId" class="form-label">Id:</label>
+                <input type="text" class="form-control" id="editId" readonly />
+              </div>
+              <div class="mb-3">
+                <label for="editName" class="form-label">Name:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editName"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="editIdProduct" class="form-label"
+                  >Product ID:</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editIdProduct"
+                  required
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="editStatus" class="form-label">Status:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editStatus"
+                  required
+                />
+              </div>
+
+              <button
+                id="saveChangesButton"
+                type="button"
+                class="btn btn-primary"
+                onclick="saveChanges()"
+              >
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+Get Product: http://localhost:3000/api/products
+Get User: http://localhost:3000/api/users
+Get Type: http://localhost:3000/api/types
+Get Table: http://localhost:3000/api/tables
+Get Invoice: http://localhost:3000/api/invoices
+
+Post Product: http://localhost:3000/insert/product
+Post User: http://localhost:3000/insert/user
+Post Type: http://localhost:3000/insert/type
+Post Table: http://localhost:3000/insert/table
+Post Invoice: http://localhost:3000/insert/invoice
+
+Put Product: http://localhost:3000/update/product
+Put User: http://localhost:3000/update/user
+Put Type: http://localhost:3000/update/type
+Put Table: http://localhost:3000/update/table
+Put Invoice: http://localhost:3000/update/invoice
+
+Delete Product: http://localhost:3000/delete/product
+Delete User: http://localhost:3000/delete/user
+Delete Type: http://localhost:3000/delete/type
+Delete Table: http://localhost:3000/delete/table
+Delete Invoice: http://localhost:3000/delete/invoice
+
